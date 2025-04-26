@@ -1,0 +1,3 @@
+[submodule "libralink-protocol"]
+	path = libralink-protocol
+	url = https://github.com/libralinknetwork/libralink-protocol
