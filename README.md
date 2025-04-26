@@ -6,7 +6,7 @@
 
 ### Clone
 ```
-git clone --recurse-submodules git@github.com:libralinknetwork/libralink-client-web3j.git
+git clone --recurse-submodules git@github.com:libralinknetwork/libralink-client-pos.git
 ```
 
 Pull Sub-Module

@@ -10,7 +10,7 @@
 
 #include <LittleFS.h>
 #include "random_id.h"
-#include "splash_screen.h"
+#include "merchant_splash_screen.h"
 
 AsyncWebServer server(80);
 const char* apName = generateRandomId();
@@ -83,7 +83,7 @@ void setup() {
   M5.begin();
   M5.Lcd.fillScreen(TFT_WHITE);
 
-  drawMerchantSplashWithWiFi();
+  drawSplashScreen();
   delay(3000);
 
   BLEDevice::init("LibraLink BLE");
