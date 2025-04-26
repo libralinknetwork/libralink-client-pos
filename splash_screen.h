@@ -35,7 +35,7 @@ void drawMerchantSplashWithWiFi() {
   M5.Lcd.fillRect(80, 80, 160, 80, TFT_MAROON);
 
   // Table
-  M5.Lcd.fillRect(100, 170, 120, 20, TFT_DARKGREY);
+  // M5.Lcd.fillRect(100, 170, 120, 20, TFT_DARKGREY);
 
   // Support poles
   M5.Lcd.fillRect(85, 80, 5, 90, TFT_BLACK);
