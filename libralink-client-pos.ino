@@ -119,7 +119,7 @@ void setup() {
     String folderPath = "/" + currentOrderId;
     if (!LittleFS.exists(folderPath)) {
       if (LittleFS.mkdir(folderPath)) {
-        showText("USD " + String(currentOrderAmount, 2), 2);
+        showText("$ " + String(currentOrderAmount, 2), 2);
         startAdvertising();
         request->send(200, "text/plain", "Order received: id=" + currentOrderId + ", amount=" + String(currentOrderAmount, 2));
 
