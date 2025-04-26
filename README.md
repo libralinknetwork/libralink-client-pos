@@ -1,3 +1,9 @@
+## LibraLink - Merchant's Point of Sale
+
+<p align="center">
+    <img src="./etc/pos_splash.png" width="50%" height="50%"/>
+</p>
+
 ### Clone
 ```
 git clone --recurse-submodules git@github.com:libralinknetwork/libralink-client-web3j.git
