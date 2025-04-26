@@ -9,9 +9,11 @@
 #include <pb_decode.h>
 
 #include <LittleFS.h>
+#include "random_id.h"
+#include "splash_screen.h"
 
 AsyncWebServer server(80);
-const char* apName = "LibraLink";
+const char* apName = generateRandomId();
 
 BLECharacteristic* pCharacteristic = nullptr;  // must be defined somewhere
 
@@ -79,6 +81,11 @@ class MyCallbacks : public BLECharacteristicCallbacks {
 
 void setup() {
   M5.begin();
+  M5.Lcd.fillScreen(TFT_WHITE);
+
+  drawMerchantSplashWithWiFi();
+  delay(3000);
+
   BLEDevice::init("LibraLink BLE");
 
   startWifiAndServer();  // Setup Wi-Fi AP and WebServer

@@ -24,7 +24,7 @@ inline void startWifiAndServer() {
   );
   WiFi.softAP(apName);
 
-  showText(apName, 1);
+  showText(String("WIFI: ") + apName, 1);
 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(200, "text/html", R"rawliteral(
