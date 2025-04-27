@@ -4,6 +4,11 @@
     <img src="./etc/pos_splash.png" width="50%" height="50%"/>
 </p>
 
+### Verified Development Boards
+
+- [M5Stack Official Core2 ESP32 IoT Development Kit for AWS IoT Kit](https://www.amazon.com/dp/B08VGRZYJR)
+- [M5Stack Official Core2 ESP32 IoT Development Kit V1.1](https://www.amazon.com/dp/B0DQSTJXMC)
+
 ### Clone
 ```
 git clone --recurse-submodules git@github.com:libralinknetwork/libralink-client-pos.git
