@@ -26,6 +26,7 @@ typedef struct _io_libralink_client_payment_proto_EnvelopeContent {
     pb_size_t which_entity;
     union {
         pb_callback_t envelope;
+        pb_callback_t errorResponse;
         pb_callback_t processingFee;
         pb_callback_t surchargeRequest;
         pb_callback_t paymentRequest;
@@ -38,7 +39,7 @@ typedef struct _io_libralink_client_payment_proto_EnvelopeContent {
         pb_callback_t getProcessorsResponse;
         pb_callback_t registerKeyRequest;
         pb_callback_t registerKeyResponse;
-        pb_callback_t errorResponse;
+        pb_callback_t sharePayerDetails;
     } entity;
 } io_libralink_client_payment_proto_EnvelopeContent;
 
@@ -148,6 +149,12 @@ typedef struct _io_libralink_client_payment_proto_ErrorResponse {
     pb_callback_t message;
 } io_libralink_client_payment_proto_ErrorResponse;
 
+typedef struct _io_libralink_client_payment_proto_SharePayerDetails {
+    pb_callback_t challenge;
+    pb_callback_t from;
+    pb_callback_t fromProc;
+} io_libralink_client_payment_proto_SharePayerDetails;
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -160,6 +167,7 @@ extern "C" {
 
 
 #define io_libralink_client_payment_proto_EnvelopeContent_reason_ENUMTYPE io_libralink_client_payment_proto_SignatureReason
+
 
 
 
@@ -195,6 +203,7 @@ extern "C" {
 #define io_libralink_client_payment_proto_ProcessorDetails_init_default {{{NULL}, NULL}}
 #define io_libralink_client_payment_proto_GetProcessorsResponse_init_default {{{NULL}, NULL}}
 #define io_libralink_client_payment_proto_ErrorResponse_init_default {0, {{NULL}, NULL}}
+#define io_libralink_client_payment_proto_SharePayerDetails_init_default {{{NULL}, NULL}, {{NULL}, NULL}, {{NULL}, NULL}}
 #define io_libralink_client_payment_proto_Envelope_init_zero {{{NULL}, NULL}, false, io_libralink_client_payment_proto_EnvelopeContent_init_zero, {{NULL}, NULL}}
 #define io_libralink_client_payment_proto_EnvelopeContent_init_zero {{{NULL}, NULL}, {{NULL}, NULL}, {{NULL}, NULL}, {{NULL}, NULL}, 0, {{{NULL}, NULL}}}
 #define io_libralink_client_payment_proto_ProcessingFee_init_zero {{{NULL}, NULL}, {{NULL}, NULL}, {{NULL}, NULL}, false, io_libralink_client_payment_proto_Envelope_init_zero}
@@ -212,6 +221,7 @@ extern "C" {
 #define io_libralink_client_payment_proto_ProcessorDetails_init_zero {{{NULL}, NULL}}
 #define io_libralink_client_payment_proto_GetProcessorsResponse_init_zero {{{NULL}, NULL}}
 #define io_libralink_client_payment_proto_ErrorResponse_init_zero {0, {{NULL}, NULL}}
+#define io_libralink_client_payment_proto_SharePayerDetails_init_zero {{{NULL}, NULL}, {{NULL}, NULL}, {{NULL}, NULL}}
 
 /* Field tags (for use in manual encoding/decoding) */
 #define io_libralink_client_payment_proto_EnvelopeContent_address_tag 1
@@ -219,19 +229,20 @@ extern "C" {
 #define io_libralink_client_payment_proto_EnvelopeContent_algorithm_tag 3
 #define io_libralink_client_payment_proto_EnvelopeContent_reason_tag 4
 #define io_libralink_client_payment_proto_EnvelopeContent_envelope_tag 5
-#define io_libralink_client_payment_proto_EnvelopeContent_processingFee_tag 6
-#define io_libralink_client_payment_proto_EnvelopeContent_surchargeRequest_tag 7
-#define io_libralink_client_payment_proto_EnvelopeContent_paymentRequest_tag 8
-#define io_libralink_client_payment_proto_EnvelopeContent_check_tag 9
-#define io_libralink_client_payment_proto_EnvelopeContent_getBalanceRequest_tag 10
-#define io_libralink_client_payment_proto_EnvelopeContent_getBalanceResponse_tag 11
-#define io_libralink_client_payment_proto_EnvelopeContent_depositRequest_tag 12
-#define io_libralink_client_payment_proto_EnvelopeContent_depositResponse_tag 13
-#define io_libralink_client_payment_proto_EnvelopeContent_getProcessorsRequest_tag 14
-#define io_libralink_client_payment_proto_EnvelopeContent_getProcessorsResponse_tag 15
-#define io_libralink_client_payment_proto_EnvelopeContent_registerKeyRequest_tag 16
-#define io_libralink_client_payment_proto_EnvelopeContent_registerKeyResponse_tag 17
-#define io_libralink_client_payment_proto_EnvelopeContent_errorResponse_tag 18
+#define io_libralink_client_payment_proto_EnvelopeContent_errorResponse_tag 6
+#define io_libralink_client_payment_proto_EnvelopeContent_processingFee_tag 7
+#define io_libralink_client_payment_proto_EnvelopeContent_surchargeRequest_tag 8
+#define io_libralink_client_payment_proto_EnvelopeContent_paymentRequest_tag 9
+#define io_libralink_client_payment_proto_EnvelopeContent_check_tag 10
+#define io_libralink_client_payment_proto_EnvelopeContent_getBalanceRequest_tag 11
+#define io_libralink_client_payment_proto_EnvelopeContent_getBalanceResponse_tag 12
+#define io_libralink_client_payment_proto_EnvelopeContent_depositRequest_tag 13
+#define io_libralink_client_payment_proto_EnvelopeContent_depositResponse_tag 14
+#define io_libralink_client_payment_proto_EnvelopeContent_getProcessorsRequest_tag 15
+#define io_libralink_client_payment_proto_EnvelopeContent_getProcessorsResponse_tag 16
+#define io_libralink_client_payment_proto_EnvelopeContent_registerKeyRequest_tag 17
+#define io_libralink_client_payment_proto_EnvelopeContent_registerKeyResponse_tag 18
+#define io_libralink_client_payment_proto_EnvelopeContent_sharePayerDetails_tag 19
 #define io_libralink_client_payment_proto_Envelope_id_tag 1
 #define io_libralink_client_payment_proto_Envelope_content_tag 2
 #define io_libralink_client_payment_proto_Envelope_sig_tag 3
@@ -286,6 +297,9 @@ extern "C" {
 #define io_libralink_client_payment_proto_GetProcessorsResponse_processors_tag 1
 #define io_libralink_client_payment_proto_ErrorResponse_code_tag 1
 #define io_libralink_client_payment_proto_ErrorResponse_message_tag 2
+#define io_libralink_client_payment_proto_SharePayerDetails_challenge_tag 1
+#define io_libralink_client_payment_proto_SharePayerDetails_from_tag 2
+#define io_libralink_client_payment_proto_SharePayerDetails_fromProc_tag 3
 
 /* Struct field encoding specification for nanopb */
 #define io_libralink_client_payment_proto_Envelope_FIELDLIST(X, a) \
@@ -302,22 +316,24 @@ X(a, CALLBACK, SINGULAR, STRING,   pubKey,            2) \
 X(a, CALLBACK, SINGULAR, STRING,   algorithm,         3) \
 X(a, CALLBACK, SINGULAR, UENUM,    reason,            4) \
 X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,envelope,entity.envelope),   5) \
-X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,processingFee,entity.processingFee),   6) \
-X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,surchargeRequest,entity.surchargeRequest),   7) \
-X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,paymentRequest,entity.paymentRequest),   8) \
-X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,check,entity.check),   9) \
-X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,getBalanceRequest,entity.getBalanceRequest),  10) \
-X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,getBalanceResponse,entity.getBalanceResponse),  11) \
-X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,depositRequest,entity.depositRequest),  12) \
-X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,depositResponse,entity.depositResponse),  13) \
-X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,getProcessorsRequest,entity.getProcessorsRequest),  14) \
-X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,getProcessorsResponse,entity.getProcessorsResponse),  15) \
-X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,registerKeyRequest,entity.registerKeyRequest),  16) \
-X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,registerKeyResponse,entity.registerKeyResponse),  17) \
-X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,errorResponse,entity.errorResponse),  18)
+X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,errorResponse,entity.errorResponse),   6) \
+X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,processingFee,entity.processingFee),   7) \
+X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,surchargeRequest,entity.surchargeRequest),   8) \
+X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,paymentRequest,entity.paymentRequest),   9) \
+X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,check,entity.check),  10) \
+X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,getBalanceRequest,entity.getBalanceRequest),  11) \
+X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,getBalanceResponse,entity.getBalanceResponse),  12) \
+X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,depositRequest,entity.depositRequest),  13) \
+X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,depositResponse,entity.depositResponse),  14) \
+X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,getProcessorsRequest,entity.getProcessorsRequest),  15) \
+X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,getProcessorsResponse,entity.getProcessorsResponse),  16) \
+X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,registerKeyRequest,entity.registerKeyRequest),  17) \
+X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,registerKeyResponse,entity.registerKeyResponse),  18) \
+X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,sharePayerDetails,entity.sharePayerDetails),  19)
 #define io_libralink_client_payment_proto_EnvelopeContent_CALLBACK pb_default_field_callback
 #define io_libralink_client_payment_proto_EnvelopeContent_DEFAULT NULL
 #define io_libralink_client_payment_proto_EnvelopeContent_entity_envelope_MSGTYPE io_libralink_client_payment_proto_Envelope
+#define io_libralink_client_payment_proto_EnvelopeContent_entity_errorResponse_MSGTYPE io_libralink_client_payment_proto_ErrorResponse
 #define io_libralink_client_payment_proto_EnvelopeContent_entity_processingFee_MSGTYPE io_libralink_client_payment_proto_ProcessingFee
 #define io_libralink_client_payment_proto_EnvelopeContent_entity_surchargeRequest_MSGTYPE io_libralink_client_payment_proto_SurchargeRequest
 #define io_libralink_client_payment_proto_EnvelopeContent_entity_paymentRequest_MSGTYPE io_libralink_client_payment_proto_PaymentRequest
@@ -330,7 +346,7 @@ X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,errorResponse,entity.errorResponse), 
 #define io_libralink_client_payment_proto_EnvelopeContent_entity_getProcessorsResponse_MSGTYPE io_libralink_client_payment_proto_GetProcessorsResponse
 #define io_libralink_client_payment_proto_EnvelopeContent_entity_registerKeyRequest_MSGTYPE io_libralink_client_payment_proto_RegisterKeyRequest
 #define io_libralink_client_payment_proto_EnvelopeContent_entity_registerKeyResponse_MSGTYPE io_libralink_client_payment_proto_RegisterKeyResponse
-#define io_libralink_client_payment_proto_EnvelopeContent_entity_errorResponse_MSGTYPE io_libralink_client_payment_proto_ErrorResponse
+#define io_libralink_client_payment_proto_EnvelopeContent_entity_sharePayerDetails_MSGTYPE io_libralink_client_payment_proto_SharePayerDetails
 
 #define io_libralink_client_payment_proto_ProcessingFee_FIELDLIST(X, a) \
 X(a, CALLBACK, SINGULAR, STRING,   feeType,           1) \
@@ -449,6 +465,13 @@ X(a, CALLBACK, SINGULAR, STRING,   message,           2)
 #define io_libralink_client_payment_proto_ErrorResponse_CALLBACK pb_default_field_callback
 #define io_libralink_client_payment_proto_ErrorResponse_DEFAULT NULL
 
+#define io_libralink_client_payment_proto_SharePayerDetails_FIELDLIST(X, a) \
+X(a, CALLBACK, SINGULAR, STRING,   challenge,         1) \
+X(a, CALLBACK, SINGULAR, STRING,   from,              2) \
+X(a, CALLBACK, SINGULAR, STRING,   fromProc,          3)
+#define io_libralink_client_payment_proto_SharePayerDetails_CALLBACK pb_default_field_callback
+#define io_libralink_client_payment_proto_SharePayerDetails_DEFAULT NULL
+
 extern const pb_msgdesc_t io_libralink_client_payment_proto_Envelope_msg;
 extern const pb_msgdesc_t io_libralink_client_payment_proto_EnvelopeContent_msg;
 extern const pb_msgdesc_t io_libralink_client_payment_proto_ProcessingFee_msg;
@@ -466,6 +489,7 @@ extern const pb_msgdesc_t io_libralink_client_payment_proto_GetProcessorsRequest
 extern const pb_msgdesc_t io_libralink_client_payment_proto_ProcessorDetails_msg;
 extern const pb_msgdesc_t io_libralink_client_payment_proto_GetProcessorsResponse_msg;
 extern const pb_msgdesc_t io_libralink_client_payment_proto_ErrorResponse_msg;
+extern const pb_msgdesc_t io_libralink_client_payment_proto_SharePayerDetails_msg;
 
 /* Defines for backwards compatibility with code written before nanopb-0.4.0 */
 #define io_libralink_client_payment_proto_Envelope_fields &io_libralink_client_payment_proto_Envelope_msg
@@ -485,6 +509,7 @@ extern const pb_msgdesc_t io_libralink_client_payment_proto_ErrorResponse_msg;
 #define io_libralink_client_payment_proto_ProcessorDetails_fields &io_libralink_client_payment_proto_ProcessorDetails_msg
 #define io_libralink_client_payment_proto_GetProcessorsResponse_fields &io_libralink_client_payment_proto_GetProcessorsResponse_msg
 #define io_libralink_client_payment_proto_ErrorResponse_fields &io_libralink_client_payment_proto_ErrorResponse_msg
+#define io_libralink_client_payment_proto_SharePayerDetails_fields &io_libralink_client_payment_proto_SharePayerDetails_msg
 
 /* Maximum encoded size of messages (where known) */
 /* io_libralink_client_payment_proto_Envelope_size depends on runtime parameters */
@@ -504,6 +529,7 @@ extern const pb_msgdesc_t io_libralink_client_payment_proto_ErrorResponse_msg;
 /* io_libralink_client_payment_proto_ProcessorDetails_size depends on runtime parameters */
 /* io_libralink_client_payment_proto_GetProcessorsResponse_size depends on runtime parameters */
 /* io_libralink_client_payment_proto_ErrorResponse_size depends on runtime parameters */
+/* io_libralink_client_payment_proto_SharePayerDetails_size depends on runtime parameters */
 
 #ifdef __cplusplus
 } /* extern "C" */

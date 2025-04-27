@@ -20,57 +20,134 @@ BLECharacteristic* pCharacteristic = nullptr;  // must be defined somewhere
 String currentOrderId = "";
 double currentOrderAmount = -1;
 
+String payer;
+String payerProc;
+String challenge;
+
+bool decode_string(pb_istream_t *stream, const pb_field_t *field, void **arg) {
+    char *buffer = (char *)(*arg);
+    size_t len = stream->bytes_left;
+    if (len > 127) len = 127;
+    if (!pb_read(stream, (pb_byte_t*)buffer, len)) return false;
+    buffer[len] = '\0';
+    return true;
+}
+
+/* Capture context to capture SharePayerDetails raw bytes */
+struct CaptureContext {
+    uint8_t *buffer;
+    size_t max_size;
+    size_t size;
+    pb_size_t *which_entity_ptr; // pointer to which_entity
+};
+
+bool capture_entity(pb_istream_t *stream, const pb_field_t *field, void **arg) {
+    CaptureContext *ctx = (CaptureContext*)(*arg);
+
+    size_t to_read = stream->bytes_left; // save BEFORE reading
+    if (to_read > ctx->max_size) return false;
+    if (!pb_read(stream, ctx->buffer, to_read)) return false;
+
+    ctx->size = to_read;  // must be original bytes left
+    if (ctx->which_entity_ptr) {
+        *(ctx->which_entity_ptr) = field->tag;
+    }
+
+    return true;
+}
+
 class MyCallbacks : public BLECharacteristicCallbacks {
+
   void onWrite(BLECharacteristic* pChar) override {
-    std::string value = std::string((char*)pChar->getData(), pChar->getLength());
+      std::string value = std::string((char*) pChar->getData(), pChar->getLength());
 
-    /* Step 1: Base64 decode using mbedtls */
-    size_t decodedLen = 0;
-    size_t estimatedLen = (value.length() * 3) / 4; // rough estimation
-    uint8_t* decodedData = (uint8_t*) malloc(estimatedLen);
-    if (!decodedData) {
-        showText("Failed to allocate memory", 1);
-        return;
-    }
+      // For debug purpose only
+      createFile("/", String(generateRandomId()) + ".txt", String(value.c_str()));
 
-    int ret = mbedtls_base64_decode(decodedData, estimatedLen, &decodedLen, (const unsigned char*)value.c_str(), value.length());
-    if (ret != 0) {
-        showText("Base64 decode error", 1);
-        free(decodedData);
-        return;
-    }
+      /* Step 1: Base64 decode using mbedtls */
+      size_t decodedLen = 0;
+      size_t estimatedLen = (value.length() * 3) / 4; // rough estimation
+      uint8_t* decodedData = (uint8_t*) malloc(estimatedLen);
+      if (!decodedData) {
+          showText("Failed to allocate memory", 1);
+          return;
+      }
 
-    /* Step 2: Protobuf decode */
+      int ret = mbedtls_base64_decode(decodedData, estimatedLen, &decodedLen, (const unsigned char*) value.c_str(), value.length());
+      if (ret != 0) {
+          showText("Base64 decode error", 1);
+          free(decodedData);
+          return;
+      }
+
     io_libralink_client_payment_proto_Envelope envelope = io_libralink_client_payment_proto_Envelope_init_zero;
-    pb_istream_t stream = pb_istream_from_buffer(decodedData, decodedLen);
+    uint8_t entityBuffer[256] = {0};
+    CaptureContext captureCtx = {
+        .buffer = entityBuffer,
+        .max_size = sizeof(entityBuffer),
+        .size = 0,
+        .which_entity_ptr = &(envelope.content.which_entity)
+    };
 
+    envelope.content.entity.sharePayerDetails.funcs.decode = capture_entity;
+    envelope.content.entity.sharePayerDetails.arg = &captureCtx;
+    envelope.content.entity.check.funcs.decode = capture_entity;
+    envelope.content.entity.check.arg = &captureCtx;
+    envelope.content.entity.paymentRequest.funcs.decode = capture_entity;
+    envelope.content.entity.paymentRequest.arg = &captureCtx;
+    envelope.content.entity.errorResponse.funcs.decode = capture_entity;
+    envelope.content.entity.errorResponse.arg = &captureCtx;
+
+    // Decode Envelope
+    pb_istream_t stream = pb_istream_from_buffer(decodedData, decodedLen);
     if (!pb_decode(&stream, io_libralink_client_payment_proto_Envelope_fields, &envelope)) {
-        showText("Protobuf decode failed", 1);
+        showText("Failed to decode Envelope", 1);
         free(decodedData);
         return;
     }
 
-    /* Step 3: Check what entity is inside */
-    if (envelope.has_content) {
-        if (envelope.content.which_entity == io_libralink_client_payment_proto_EnvelopeContent_check_tag) {
-            showText("Received an E-Check", 1);
+    // showText("Entity type: " + String(envelope.content.which_entity), 1);
+    // return;
+
+    if (envelope.content.which_entity == io_libralink_client_payment_proto_EnvelopeContent_sharePayerDetails_tag) {
+
+        // Decode SharePayerDetails
+        io_libralink_client_payment_proto_SharePayerDetails details = io_libralink_client_payment_proto_SharePayerDetails_init_zero;
+
+        char challengeBuf[128] = {0};
+        char fromBuf[128] = {0};
+        char fromProcBuf[128] = {0};
+
+        details.challenge.funcs.decode = decode_string;
+        details.challenge.arg = challengeBuf;
+        details.from.funcs.decode = decode_string;
+        details.from.arg = fromBuf;
+        details.fromProc.funcs.decode = decode_string;
+        details.fromProc.arg = fromProcBuf;
+
+        pb_istream_t entityStream = pb_istream_from_buffer(entityBuffer, captureCtx.size);
+        if (pb_decode(&entityStream, io_libralink_client_payment_proto_SharePayerDetails_fields, &details)) {
+            
+            challenge = String(challengeBuf);
+            payer = String(fromBuf);
+            payerProc = String(fromProcBuf);
+
+            showText("Success: " + String(payerProc), 1);
         } else {
-            showText("Entity type: " + String(envelope.content.which_entity), 1);
+            showText("Failed to decode SharePayerDetails", 1);
         }
-    } else {
-        showText("Envelope has no content", 1);
     }
 
-    free(decodedData);   
+    free(decodedData);
   }
 
   void onRead(BLECharacteristic* pChar) override {
 
     String base64Data = generatePaymentRequestBase64(
         String(currentOrderAmount, 2),
-        "0xFromAddress",
+        payer,
         "0xToAddress",
-        "0xProcessor",
+        payerProc,
         currentOrderId
     );
 

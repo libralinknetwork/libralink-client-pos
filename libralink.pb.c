@@ -57,6 +57,9 @@ PB_BIND(io_libralink_client_payment_proto_GetProcessorsResponse, io_libralink_cl
 PB_BIND(io_libralink_client_payment_proto_ErrorResponse, io_libralink_client_payment_proto_ErrorResponse, AUTO)
 
 
+PB_BIND(io_libralink_client_payment_proto_SharePayerDetails, io_libralink_client_payment_proto_SharePayerDetails, AUTO)
+
+
 
 
 
