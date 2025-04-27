@@ -4,28 +4,39 @@
 #include <BLEUtils.h>
 #include <BLEServer.h>
 
-extern BLECharacteristic* pCharacteristic;  // declare it here
+extern BLECharacteristic* pPayerDetails;
+extern BLECharacteristic* pSignedPaymentRequest;
+extern BLECharacteristic* pSignedECheck;
+extern BLECharacteristic* pReadBLEMessage;
 
-// UUIDs (you can adjust if needed)
-#define SERVICE_UUID        "12345678-1234-1234-1234-123456789abc"
-#define CHARACTERISTIC_UUID "abcd1234-5678-90ab-cdef-123456789abc"
+#define SERVICE_UUID "12345678-1234-1234-1234-123456789abc"
 
-inline void startBLEServer(BLECharacteristicCallbacks* callbacks) {
-    BLEDevice::init("LibraLink BLE");
+#define UUID_WRITE_SHARE_PAYER_DETAILS "2bb6c1d4-5831-4a4e-86bd-3df81fa7c774"
+#define UUID_WRITE_SIGNED_PAYMENT_REQUEST "bebbd87f-7327-4552-ae15-3b4bd786b096"
+#define UUID_WRITE_SIGNED_E_CHECK "a0dd609f-fbda-4996-ab9c-6d53fe763945"
+#define UUID_READ_BLE_MESSAGE "a20d3f9f-1d6e-4936-80ab-cd7cb8c8b550"
+
+inline void startBLEServer(String bleName, BLECharacteristicCallbacks* callbackPayerDetails, BLECharacteristicCallbacks* callbackSignedPaymentRequest, 
+                            BLECharacteristicCallbacks* callbacSignedECheck, BLECharacteristicCallbacks* callbacMessageRead) {
+    
+    BLEDevice::init(bleName.c_str());
 
     BLEServer* pServer = BLEDevice::createServer();
-    pServer->setCallbacks(new BLEServerCallbacks());  // You can customize if needed
+    pServer->setCallbacks(new BLEServerCallbacks());
 
     BLEService* pService = pServer->createService(SERVICE_UUID);
+    pPayerDetails = pService->createCharacteristic(UUID_WRITE_SHARE_PAYER_DETAILS, BLECharacteristic::PROPERTY_WRITE);
+    pPayerDetails->setCallbacks(callbackPayerDetails);
 
-    pCharacteristic = pService->createCharacteristic(
-                        CHARACTERISTIC_UUID,
-                        BLECharacteristic::PROPERTY_READ |
-                        BLECharacteristic::PROPERTY_WRITE
-                      );
-    pCharacteristic->setCallbacks(callbacks);
+    pSignedPaymentRequest = pService->createCharacteristic(UUID_WRITE_SIGNED_PAYMENT_REQUEST, BLECharacteristic::PROPERTY_WRITE);
+    pSignedPaymentRequest->setCallbacks(callbackSignedPaymentRequest);
 
-    pCharacteristic->setValue("Hello BLE");
+    pSignedECheck = pService->createCharacteristic(UUID_WRITE_SIGNED_E_CHECK, BLECharacteristic::PROPERTY_WRITE);
+    pSignedECheck->setCallbacks(callbacSignedECheck);
+
+    pReadBLEMessage = pService->createCharacteristic(UUID_READ_BLE_MESSAGE, BLECharacteristic::PROPERTY_READ);
+    pReadBLEMessage->setCallbacks(callbacMessageRead);    
+
     pService->start();
 
     BLEAdvertising* pAdvertising = BLEDevice::getAdvertising();

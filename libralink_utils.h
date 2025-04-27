@@ -6,6 +6,7 @@
 #include <base64.h>
 #include <Arduino.h>
 #include <time.h>
+#include "encryption_utils.h"
 
 inline bool decode_string(pb_istream_t *stream, const pb_field_t *field, void **arg) {
     char *buffer = (char *)(*arg);
@@ -118,10 +119,12 @@ inline String generatePaymentRequestBase64(const String& amount, const String& f
     envelope.sig.funcs.encode = &encode_string_callback;
     envelope.sig.arg = (void*)"";
 
+    io_libralink_client_payment_proto_Envelope signedEnvelope = signEnvelope(envelope);
+
     uint8_t buffer[1024];
     pb_ostream_t stream = pb_ostream_from_buffer(buffer, sizeof(buffer));
 
-    if (!pb_encode(&stream, io_libralink_client_payment_proto_Envelope_fields, &envelope)) {
+    if (!pb_encode(&stream, io_libralink_client_payment_proto_Envelope_fields, &signedEnvelope)) {
         Serial.println("Encoding Envelope failed");
         return "";
     }

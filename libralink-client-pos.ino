@@ -12,117 +12,24 @@
 #include "random_id.h"
 #include "merchant_splash_screen.h"
 
+#include "handler_share_payer_details.h"
+#include "handler_signed_payment_request.h"
+#include "handler_signed_echeck.h"
+#include "handler_read_message.h"
+
+#define IF_DEBUG 1
+
 AsyncWebServer server(80);
 const char* apName = generateRandomId();
 
-BLECharacteristic* pCharacteristic = nullptr;  // must be defined somewhere
+BLECharacteristic* pPayerDetails = nullptr;
+BLECharacteristic* pSignedPaymentRequest = nullptr;
+BLECharacteristic* pSignedECheck = nullptr;
+BLECharacteristic* pReadBLEMessage = nullptr;
 
 String currentOrderId = "";
 double currentOrderAmount = -1;
-
-String payer;
-String payerProc;
-String challenge;
-
-class MyCallbacks : public BLECharacteristicCallbacks {
-
-  void onWrite(BLECharacteristic* pChar) override {
-      std::string value = std::string((char*) pChar->getData(), pChar->getLength());
-
-      // For debug purpose only
-      createFile("/", String(generateRandomId()) + ".txt", String(value.c_str()));
-
-      /* Step 1: Base64 decode using mbedtls */
-      size_t decodedLen = 0;
-      size_t estimatedLen = (value.length() * 3) / 4; // rough estimation
-      uint8_t* decodedData = (uint8_t*) malloc(estimatedLen);
-      if (!decodedData) {
-          showText("Failed to allocate memory", 1);
-          return;
-      }
-
-      int ret = mbedtls_base64_decode(decodedData, estimatedLen, &decodedLen, (const unsigned char*) value.c_str(), value.length());
-      if (ret != 0) {
-          showText("Base64 decode error", 1);
-          free(decodedData);
-          return;
-      }
-
-    io_libralink_client_payment_proto_Envelope envelope = io_libralink_client_payment_proto_Envelope_init_zero;
-    uint8_t entityBuffer[256] = {0};
-    CaptureContext captureCtx = {
-        .buffer = entityBuffer,
-        .max_size = sizeof(entityBuffer),
-        .size = 0,
-        .which_entity_ptr = &(envelope.content.which_entity)
-    };
-
-    envelope.content.entity.sharePayerDetails.funcs.decode = capture_entity;
-    envelope.content.entity.sharePayerDetails.arg = &captureCtx;
-    envelope.content.entity.check.funcs.decode = capture_entity;
-    envelope.content.entity.check.arg = &captureCtx;
-    envelope.content.entity.paymentRequest.funcs.decode = capture_entity;
-    envelope.content.entity.paymentRequest.arg = &captureCtx;
-    envelope.content.entity.errorResponse.funcs.decode = capture_entity;
-    envelope.content.entity.errorResponse.arg = &captureCtx;
-
-    // Decode Envelope
-    pb_istream_t stream = pb_istream_from_buffer(decodedData, decodedLen);
-    if (!pb_decode(&stream, io_libralink_client_payment_proto_Envelope_fields, &envelope)) {
-        showText("Failed to decode Envelope", 1);
-        free(decodedData);
-        return;
-    }
-
-    // showText("Entity type: " + String(envelope.content.which_entity), 1);
-    // return;
-
-    if (envelope.content.which_entity == io_libralink_client_payment_proto_EnvelopeContent_sharePayerDetails_tag) {
-
-        // Decode SharePayerDetails
-        io_libralink_client_payment_proto_SharePayerDetails details = io_libralink_client_payment_proto_SharePayerDetails_init_zero;
-
-        char challengeBuf[128] = {0};
-        char fromBuf[128] = {0};
-        char fromProcBuf[128] = {0};
-
-        details.challenge.funcs.decode = decode_string;
-        details.challenge.arg = challengeBuf;
-        details.from.funcs.decode = decode_string;
-        details.from.arg = fromBuf;
-        details.fromProc.funcs.decode = decode_string;
-        details.fromProc.arg = fromProcBuf;
-
-        pb_istream_t entityStream = pb_istream_from_buffer(entityBuffer, captureCtx.size);
-        if (pb_decode(&entityStream, io_libralink_client_payment_proto_SharePayerDetails_fields, &details)) {
-            
-            challenge = String(challengeBuf);
-            payer = String(fromBuf);
-            payerProc = String(fromProcBuf);
-
-            showText("Success: " + String(payerProc), 1);
-        } else {
-            showText("Failed to decode SharePayerDetails", 1);
-        }
-    }
-
-    free(decodedData);
-  }
-
-  void onRead(BLECharacteristic* pChar) override {
-
-    String base64Data = generatePaymentRequestBase64(
-        String(currentOrderAmount, 2),
-        payer,
-        "0xToAddress",
-        payerProc,
-        currentOrderId
-    );
-
-    createFile("/" + currentOrderId, "payment_request.txt", base64Data);
-    pChar->setValue(base64Data.c_str());
-  }
-};
+String currentBleMessage;
 
 void setup() {
   M5.begin();
@@ -131,19 +38,25 @@ void setup() {
   drawSplashScreen();
   delay(3000);
 
-  BLEDevice::init("LibraLink BLE");
+  startWifiAndServer();
+  startBLEServer("LibraLink BLE", new MyCallbackPayerDetails(), new MySignedPaymentRequestCallbacks(), new MySignedECheckCallbacks(), new ReadMessageRequestCallbacks());
 
-  startWifiAndServer();  // Setup Wi-Fi AP and WebServer
-  startBLEServer(new MyCallbacks());  // BLE server setup
   setupFileManagerEndpoints(server);
 
   if (!LittleFS.begin()) {
-    LittleFS.format();  // <-- TRY formatting if mount failed
+    LittleFS.format();
     if (LittleFS.begin()) {
     } else {
         Serial.println("LittleFS failed after format");
     }    
   }
+
+  #if IF_DEBUG
+    server.on("/debug", HTTP_GET, [](AsyncWebServerRequest *request) {
+        request->send(200, "text/plain", "currentOrderId: " + String(currentOrderId) + ", currentOrderAmount: " 
+                            + String(currentOrderAmount) + ", currentBleMessage: " + String(currentBleMessage));
+    });
+  #endif  
 
   server.on("/status", HTTP_GET, [](AsyncWebServerRequest *request) {
     showText("Welcome", 2);
@@ -188,6 +101,6 @@ void setup() {
 }
 
 void loop() {
-  handleWifiConnection();  // Now only one simple call
+  handleWifiConnection();
   delay(1000);
 }
