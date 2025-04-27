@@ -14,15 +14,23 @@ Pull Sub-Module
 git submodule update --remote --merge
 ```
 
-### Partition Scheme
+### Arduino IDE Configuration
+#### Board
 
-1. Open Arduino IDE
-2. Go to Tools → Partition Scheme
-3. Select:
+- Board Manager - `esp32 by Espressif Systems`
+- Board - `M5Stack-Core-ESP32`
 
-"Huge APP (3MB No OTA)" or "No OTA (Large App)
+#### Partition Scheme
+
+`Huge APP (3MB No OTA)` or `No OTA (Large App)`
 
 This gives you almost 3MB of flash for your program.
+
+#### Upload Spead
+
+`Tools > Upload Speed > 115200` - most stable, but can change depending on device
+
+### Building
 
 #### Precondition
 ```

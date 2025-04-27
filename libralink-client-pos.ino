@@ -24,38 +24,6 @@ String payer;
 String payerProc;
 String challenge;
 
-bool decode_string(pb_istream_t *stream, const pb_field_t *field, void **arg) {
-    char *buffer = (char *)(*arg);
-    size_t len = stream->bytes_left;
-    if (len > 127) len = 127;
-    if (!pb_read(stream, (pb_byte_t*)buffer, len)) return false;
-    buffer[len] = '\0';
-    return true;
-}
-
-/* Capture context to capture SharePayerDetails raw bytes */
-struct CaptureContext {
-    uint8_t *buffer;
-    size_t max_size;
-    size_t size;
-    pb_size_t *which_entity_ptr; // pointer to which_entity
-};
-
-bool capture_entity(pb_istream_t *stream, const pb_field_t *field, void **arg) {
-    CaptureContext *ctx = (CaptureContext*)(*arg);
-
-    size_t to_read = stream->bytes_left; // save BEFORE reading
-    if (to_read > ctx->max_size) return false;
-    if (!pb_read(stream, ctx->buffer, to_read)) return false;
-
-    ctx->size = to_read;  // must be original bytes left
-    if (ctx->which_entity_ptr) {
-        *(ctx->which_entity_ptr) = field->tag;
-    }
-
-    return true;
-}
-
 class MyCallbacks : public BLECharacteristicCallbacks {
 
   void onWrite(BLECharacteristic* pChar) override {
