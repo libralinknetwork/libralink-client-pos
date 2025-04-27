@@ -1,5 +1,6 @@
 #pragma once
 
+#include "config.h"
 #include "libralink.pb.h"
 #include <pb_decode.h>
 #include <mbedtls/base64.h>
@@ -21,8 +22,9 @@ class MySignedPaymentRequestCallbacks : public BLECharacteristicCallbacks {
 
       std::string value = std::string((char*) pChar->getData(), pChar->getLength());
 
-      /* Save signed Envelope to payment_request.txt */
-      createFile("/" + currentOrderId, "payment_request.txt", String(value.c_str()));
+      #if IF_DEBUG
+        createFile("/", currentOrderId + "_debug_payer_request.txt", String(value.c_str()));
+      #endif
 
       size_t decodedLen = 0;
       size_t estimatedLen = (value.length() * 3) / 4;

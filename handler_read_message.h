@@ -1,5 +1,6 @@
 #pragma once
 
+#include "config.h"
 #include "libralink.pb.h"
 #include <pb_decode.h>
 #include <mbedtls/base64.h>

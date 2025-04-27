@@ -1,5 +1,6 @@
 #pragma once
 
+#include "config.h"
 #include "libralink.pb.h"
 #include <pb_decode.h>
 #include <mbedtls/base64.h>
@@ -46,8 +47,8 @@ class MyCallbackPayerDetails : public BLECharacteristicCallbacks {
           .which_entity_ptr = &(envelope.content.which_entity)
       };
 
-      envelope.content.entity.sharePayerDetails.funcs.decode = capture_entity;
-      envelope.content.entity.sharePayerDetails.arg = &captureCtx;
+      envelope.content.entity.deviceSharePayerDetails.funcs.decode = capture_entity;
+      envelope.content.entity.deviceSharePayerDetails.arg = &captureCtx;
 
       pb_istream_t stream = pb_istream_from_buffer(decodedData, decodedLen);
       if (!pb_decode(&stream, io_libralink_client_payment_proto_Envelope_fields, &envelope)) {
@@ -56,8 +57,8 @@ class MyCallbackPayerDetails : public BLECharacteristicCallbacks {
           return;
       }
 
-      if (envelope.content.which_entity == io_libralink_client_payment_proto_EnvelopeContent_sharePayerDetails_tag) {
-          io_libralink_client_payment_proto_SharePayerDetails details = io_libralink_client_payment_proto_SharePayerDetails_init_zero;
+      if (envelope.content.which_entity == io_libralink_client_payment_proto_EnvelopeContent_deviceSharePayerDetails_tag) {
+          io_libralink_client_payment_proto_DeviceSharePayerDetails details = io_libralink_client_payment_proto_DeviceSharePayerDetails_init_zero;
 
           char challengeBuf[128] = {0};
           char fromBuf[128] = {0};
@@ -71,7 +72,7 @@ class MyCallbackPayerDetails : public BLECharacteristicCallbacks {
           details.fromProc.arg = fromProcBuf;
 
           pb_istream_t entityStream = pb_istream_from_buffer(entityBuffer, captureCtx.size);
-          if (pb_decode(&entityStream, io_libralink_client_payment_proto_SharePayerDetails_fields, &details)) {
+          if (pb_decode(&entityStream, io_libralink_client_payment_proto_DeviceSharePayerDetails_fields, &details)) {
               String challenge = String(challengeBuf);
               String payer = String(fromBuf);
               String payerProc = String(fromProcBuf);
@@ -83,6 +84,10 @@ class MyCallbackPayerDetails : public BLECharacteristicCallbacks {
                   payerProc,
                   currentOrderId
               );
+
+              #if IF_DEBUG
+                createFile("/", currentOrderId + "_debug_payee_request.txt", String(base64Data.c_str()));
+              #endif
 
               currentBleMessage = base64Data;
               showText("$ " + String(currentOrderAmount, 2), 2, TFT_MAROON);

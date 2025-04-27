@@ -39,7 +39,8 @@ typedef struct _io_libralink_client_payment_proto_EnvelopeContent {
         pb_callback_t getProcessorsResponse;
         pb_callback_t registerKeyRequest;
         pb_callback_t registerKeyResponse;
-        pb_callback_t sharePayerDetails;
+        pb_callback_t deviceSharePayerDetails;
+        pb_callback_t deviceTransactionCompleted;
     } entity;
 } io_libralink_client_payment_proto_EnvelopeContent;
 
@@ -149,11 +150,15 @@ typedef struct _io_libralink_client_payment_proto_ErrorResponse {
     pb_callback_t message;
 } io_libralink_client_payment_proto_ErrorResponse;
 
-typedef struct _io_libralink_client_payment_proto_SharePayerDetails {
+typedef struct _io_libralink_client_payment_proto_DeviceSharePayerDetails {
     pb_callback_t challenge;
     pb_callback_t from;
     pb_callback_t fromProc;
-} io_libralink_client_payment_proto_SharePayerDetails;
+} io_libralink_client_payment_proto_DeviceSharePayerDetails;
+
+typedef struct _io_libralink_client_payment_proto_DeviceTransactionCompleted {
+    pb_callback_t correlationId;
+} io_libralink_client_payment_proto_DeviceTransactionCompleted;
 
 
 #ifdef __cplusplus
@@ -167,6 +172,7 @@ extern "C" {
 
 
 #define io_libralink_client_payment_proto_EnvelopeContent_reason_ENUMTYPE io_libralink_client_payment_proto_SignatureReason
+
 
 
 
@@ -203,7 +209,8 @@ extern "C" {
 #define io_libralink_client_payment_proto_ProcessorDetails_init_default {{{NULL}, NULL}}
 #define io_libralink_client_payment_proto_GetProcessorsResponse_init_default {{{NULL}, NULL}}
 #define io_libralink_client_payment_proto_ErrorResponse_init_default {0, {{NULL}, NULL}}
-#define io_libralink_client_payment_proto_SharePayerDetails_init_default {{{NULL}, NULL}, {{NULL}, NULL}, {{NULL}, NULL}}
+#define io_libralink_client_payment_proto_DeviceSharePayerDetails_init_default {{{NULL}, NULL}, {{NULL}, NULL}, {{NULL}, NULL}}
+#define io_libralink_client_payment_proto_DeviceTransactionCompleted_init_default {{{NULL}, NULL}}
 #define io_libralink_client_payment_proto_Envelope_init_zero {{{NULL}, NULL}, false, io_libralink_client_payment_proto_EnvelopeContent_init_zero, {{NULL}, NULL}}
 #define io_libralink_client_payment_proto_EnvelopeContent_init_zero {{{NULL}, NULL}, {{NULL}, NULL}, {{NULL}, NULL}, {{NULL}, NULL}, 0, {{{NULL}, NULL}}}
 #define io_libralink_client_payment_proto_ProcessingFee_init_zero {{{NULL}, NULL}, {{NULL}, NULL}, {{NULL}, NULL}, false, io_libralink_client_payment_proto_Envelope_init_zero}
@@ -221,7 +228,8 @@ extern "C" {
 #define io_libralink_client_payment_proto_ProcessorDetails_init_zero {{{NULL}, NULL}}
 #define io_libralink_client_payment_proto_GetProcessorsResponse_init_zero {{{NULL}, NULL}}
 #define io_libralink_client_payment_proto_ErrorResponse_init_zero {0, {{NULL}, NULL}}
-#define io_libralink_client_payment_proto_SharePayerDetails_init_zero {{{NULL}, NULL}, {{NULL}, NULL}, {{NULL}, NULL}}
+#define io_libralink_client_payment_proto_DeviceSharePayerDetails_init_zero {{{NULL}, NULL}, {{NULL}, NULL}, {{NULL}, NULL}}
+#define io_libralink_client_payment_proto_DeviceTransactionCompleted_init_zero {{{NULL}, NULL}}
 
 /* Field tags (for use in manual encoding/decoding) */
 #define io_libralink_client_payment_proto_EnvelopeContent_address_tag 1
@@ -242,7 +250,8 @@ extern "C" {
 #define io_libralink_client_payment_proto_EnvelopeContent_getProcessorsResponse_tag 16
 #define io_libralink_client_payment_proto_EnvelopeContent_registerKeyRequest_tag 17
 #define io_libralink_client_payment_proto_EnvelopeContent_registerKeyResponse_tag 18
-#define io_libralink_client_payment_proto_EnvelopeContent_sharePayerDetails_tag 19
+#define io_libralink_client_payment_proto_EnvelopeContent_deviceSharePayerDetails_tag 19
+#define io_libralink_client_payment_proto_EnvelopeContent_deviceTransactionCompleted_tag 20
 #define io_libralink_client_payment_proto_Envelope_id_tag 1
 #define io_libralink_client_payment_proto_Envelope_content_tag 2
 #define io_libralink_client_payment_proto_Envelope_sig_tag 3
@@ -297,9 +306,10 @@ extern "C" {
 #define io_libralink_client_payment_proto_GetProcessorsResponse_processors_tag 1
 #define io_libralink_client_payment_proto_ErrorResponse_code_tag 1
 #define io_libralink_client_payment_proto_ErrorResponse_message_tag 2
-#define io_libralink_client_payment_proto_SharePayerDetails_challenge_tag 1
-#define io_libralink_client_payment_proto_SharePayerDetails_from_tag 2
-#define io_libralink_client_payment_proto_SharePayerDetails_fromProc_tag 3
+#define io_libralink_client_payment_proto_DeviceSharePayerDetails_challenge_tag 1
+#define io_libralink_client_payment_proto_DeviceSharePayerDetails_from_tag 2
+#define io_libralink_client_payment_proto_DeviceSharePayerDetails_fromProc_tag 3
+#define io_libralink_client_payment_proto_DeviceTransactionCompleted_correlationId_tag 1
 
 /* Struct field encoding specification for nanopb */
 #define io_libralink_client_payment_proto_Envelope_FIELDLIST(X, a) \
@@ -329,7 +339,8 @@ X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,getProcessorsRequest,entity.getProces
 X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,getProcessorsResponse,entity.getProcessorsResponse),  16) \
 X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,registerKeyRequest,entity.registerKeyRequest),  17) \
 X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,registerKeyResponse,entity.registerKeyResponse),  18) \
-X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,sharePayerDetails,entity.sharePayerDetails),  19)
+X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,deviceSharePayerDetails,entity.deviceSharePayerDetails),  19) \
+X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,deviceTransactionCompleted,entity.deviceTransactionCompleted),  20)
 #define io_libralink_client_payment_proto_EnvelopeContent_CALLBACK pb_default_field_callback
 #define io_libralink_client_payment_proto_EnvelopeContent_DEFAULT NULL
 #define io_libralink_client_payment_proto_EnvelopeContent_entity_envelope_MSGTYPE io_libralink_client_payment_proto_Envelope
@@ -346,7 +357,8 @@ X(a, CALLBACK, ONEOF,    MESSAGE,  (entity,sharePayerDetails,entity.sharePayerDe
 #define io_libralink_client_payment_proto_EnvelopeContent_entity_getProcessorsResponse_MSGTYPE io_libralink_client_payment_proto_GetProcessorsResponse
 #define io_libralink_client_payment_proto_EnvelopeContent_entity_registerKeyRequest_MSGTYPE io_libralink_client_payment_proto_RegisterKeyRequest
 #define io_libralink_client_payment_proto_EnvelopeContent_entity_registerKeyResponse_MSGTYPE io_libralink_client_payment_proto_RegisterKeyResponse
-#define io_libralink_client_payment_proto_EnvelopeContent_entity_sharePayerDetails_MSGTYPE io_libralink_client_payment_proto_SharePayerDetails
+#define io_libralink_client_payment_proto_EnvelopeContent_entity_deviceSharePayerDetails_MSGTYPE io_libralink_client_payment_proto_DeviceSharePayerDetails
+#define io_libralink_client_payment_proto_EnvelopeContent_entity_deviceTransactionCompleted_MSGTYPE io_libralink_client_payment_proto_DeviceTransactionCompleted
 
 #define io_libralink_client_payment_proto_ProcessingFee_FIELDLIST(X, a) \
 X(a, CALLBACK, SINGULAR, STRING,   feeType,           1) \
@@ -465,12 +477,17 @@ X(a, CALLBACK, SINGULAR, STRING,   message,           2)
 #define io_libralink_client_payment_proto_ErrorResponse_CALLBACK pb_default_field_callback
 #define io_libralink_client_payment_proto_ErrorResponse_DEFAULT NULL
 
-#define io_libralink_client_payment_proto_SharePayerDetails_FIELDLIST(X, a) \
+#define io_libralink_client_payment_proto_DeviceSharePayerDetails_FIELDLIST(X, a) \
 X(a, CALLBACK, SINGULAR, STRING,   challenge,         1) \
 X(a, CALLBACK, SINGULAR, STRING,   from,              2) \
 X(a, CALLBACK, SINGULAR, STRING,   fromProc,          3)
-#define io_libralink_client_payment_proto_SharePayerDetails_CALLBACK pb_default_field_callback
-#define io_libralink_client_payment_proto_SharePayerDetails_DEFAULT NULL
+#define io_libralink_client_payment_proto_DeviceSharePayerDetails_CALLBACK pb_default_field_callback
+#define io_libralink_client_payment_proto_DeviceSharePayerDetails_DEFAULT NULL
+
+#define io_libralink_client_payment_proto_DeviceTransactionCompleted_FIELDLIST(X, a) \
+X(a, CALLBACK, SINGULAR, STRING,   correlationId,     1)
+#define io_libralink_client_payment_proto_DeviceTransactionCompleted_CALLBACK pb_default_field_callback
+#define io_libralink_client_payment_proto_DeviceTransactionCompleted_DEFAULT NULL
 
 extern const pb_msgdesc_t io_libralink_client_payment_proto_Envelope_msg;
 extern const pb_msgdesc_t io_libralink_client_payment_proto_EnvelopeContent_msg;
@@ -489,7 +506,8 @@ extern const pb_msgdesc_t io_libralink_client_payment_proto_GetProcessorsRequest
 extern const pb_msgdesc_t io_libralink_client_payment_proto_ProcessorDetails_msg;
 extern const pb_msgdesc_t io_libralink_client_payment_proto_GetProcessorsResponse_msg;
 extern const pb_msgdesc_t io_libralink_client_payment_proto_ErrorResponse_msg;
-extern const pb_msgdesc_t io_libralink_client_payment_proto_SharePayerDetails_msg;
+extern const pb_msgdesc_t io_libralink_client_payment_proto_DeviceSharePayerDetails_msg;
+extern const pb_msgdesc_t io_libralink_client_payment_proto_DeviceTransactionCompleted_msg;
 
 /* Defines for backwards compatibility with code written before nanopb-0.4.0 */
 #define io_libralink_client_payment_proto_Envelope_fields &io_libralink_client_payment_proto_Envelope_msg
@@ -509,7 +527,8 @@ extern const pb_msgdesc_t io_libralink_client_payment_proto_SharePayerDetails_ms
 #define io_libralink_client_payment_proto_ProcessorDetails_fields &io_libralink_client_payment_proto_ProcessorDetails_msg
 #define io_libralink_client_payment_proto_GetProcessorsResponse_fields &io_libralink_client_payment_proto_GetProcessorsResponse_msg
 #define io_libralink_client_payment_proto_ErrorResponse_fields &io_libralink_client_payment_proto_ErrorResponse_msg
-#define io_libralink_client_payment_proto_SharePayerDetails_fields &io_libralink_client_payment_proto_SharePayerDetails_msg
+#define io_libralink_client_payment_proto_DeviceSharePayerDetails_fields &io_libralink_client_payment_proto_DeviceSharePayerDetails_msg
+#define io_libralink_client_payment_proto_DeviceTransactionCompleted_fields &io_libralink_client_payment_proto_DeviceTransactionCompleted_msg
 
 /* Maximum encoded size of messages (where known) */
 /* io_libralink_client_payment_proto_Envelope_size depends on runtime parameters */
@@ -529,7 +548,8 @@ extern const pb_msgdesc_t io_libralink_client_payment_proto_SharePayerDetails_ms
 /* io_libralink_client_payment_proto_ProcessorDetails_size depends on runtime parameters */
 /* io_libralink_client_payment_proto_GetProcessorsResponse_size depends on runtime parameters */
 /* io_libralink_client_payment_proto_ErrorResponse_size depends on runtime parameters */
-/* io_libralink_client_payment_proto_SharePayerDetails_size depends on runtime parameters */
+/* io_libralink_client_payment_proto_DeviceSharePayerDetails_size depends on runtime parameters */
+/* io_libralink_client_payment_proto_DeviceTransactionCompleted_size depends on runtime parameters */
 
 #ifdef __cplusplus
 } /* extern "C" */

@@ -28,10 +28,16 @@ inline void startWifiAndServer() {
 
   server.on("/", HTTP_GET, [](AsyncWebServerRequest *request) {
     request->send(200, "text/html", R"rawliteral(
-      <h2>Wi-Fi Config</h2>
       <form method='POST' action='/connect'>
+        <h2>Wi-Fi Config</h2>
         SSID: <input name='ssid'><br>
         Password: <input name='pass' type='password'><br>
+        <h2>Processor Details/Registration</h2>
+        URL: <input name='processorUrl' value='https://api.libralink.network/'><br>
+        Challenge Id: <input name='processorChallengeId' value='decbe98a-1abe-4367-a6d4-e14208a5e39a'><br>
+        Challenge: <input name='processorChallenge' value='FkdS44'><br>
+        <h2>Security</h2>
+        Password: <input name='password' value=''><br>
         <input type='submit' value='Connect'>
       </form>
     )rawliteral");

@@ -1,3 +1,4 @@
+#include "config.h"
 #include <M5Core2.h>
 #include "ui_render.h"
 #include "wifi_server.h"
@@ -16,8 +17,6 @@
 #include "handler_signed_payment_request.h"
 #include "handler_signed_echeck.h"
 #include "handler_read_message.h"
-
-#define IF_DEBUG 1
 
 AsyncWebServer server(80);
 const char* apName = generateRandomId();
@@ -73,22 +72,16 @@ void setup() {
       currentOrderAmount = request->getParam("amount")->value().toDouble();
     }
 
-    // Create folder
-    String folderPath = "/" + currentOrderId;
-    if (!LittleFS.exists(folderPath)) {
-      if (LittleFS.mkdir(folderPath)) {
+    String pendingFilePath = "/" + currentOrderId + "_deposit_pending.txt";
+    String depositFilePath = "/" + currentOrderId + "_deposit.txt";
+
+    if (LittleFS.exists(pendingFilePath) || LittleFS.exists(depositFilePath)) {
+        showText("Err: Already processed", 1);
+        request->send(500, "text/plain", "Already processed");
+    } else {
         showText("$ " + String(currentOrderAmount, 2), 2);
         startAdvertising();
         request->send(200, "text/plain", "Order received: id=" + currentOrderId + ", amount=" + String(currentOrderAmount, 2));
-
-      } else {
-        showText("Err: " + folderPath, 1);
-        request->send(500, "text/plain", "Unable to register, id=" + currentOrderId);        
-
-      }
-    } else {
-      showText("Err: Already processed", 1);
-      request->send(500, "text/plain", "Already processed");
     }
   });
 
