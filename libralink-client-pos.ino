@@ -19,7 +19,9 @@
 #include "handler_read_message.h"
 
 AsyncWebServer server(80);
-const char* apName = generateRandomId();
+String apName = generateRandomString();
+String bleName = generateRandomString();
+String challenge = "";
 
 BLECharacteristic* pPayerDetails = nullptr;
 BLECharacteristic* pSignedPaymentRequest = nullptr;
@@ -38,7 +40,7 @@ void setup() {
   delay(3000);
 
   startWifiAndServer();
-  startBLEServer("LibraLink BLE", new MyCallbackPayerDetails(), new MySignedPaymentRequestCallbacks(), new MySignedECheckCallbacks(), new ReadMessageRequestCallbacks());
+  startBLEServer(new MyCallbackPayerDetails(), new MySignedPaymentRequestCallbacks(), new MySignedECheckCallbacks(), new ReadMessageRequestCallbacks());
 
   setupFileManagerEndpoints(server);
 
@@ -79,7 +81,9 @@ void setup() {
         showText("Err: Already processed", 1);
         request->send(500, "text/plain", "Already processed");
     } else {
-        showText("$ " + String(currentOrderAmount, 2), 2);
+        challenge = generateRandomString();        
+        showOrderAmount("$ " + String(currentOrderAmount, 2));
+
         startAdvertising();
         request->send(200, "text/plain", "Order received: id=" + currentOrderId + ", amount=" + String(currentOrderAmount, 2));
     }

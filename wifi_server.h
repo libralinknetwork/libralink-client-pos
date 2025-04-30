@@ -10,7 +10,7 @@ String wifiPass;
 bool shouldConnect;
 bool isConnecting;
 bool hasConnected;
-extern const char* apName;
+extern String apName;
 String localIp;
 unsigned long connectStartTime;
 
@@ -33,7 +33,7 @@ inline void startWifiAndServer() {
         SSID: <input name='ssid'><br>
         Password: <input name='pass' type='password'><br>
         <h2>Processor Details/Registration</h2>
-        URL: <input name='processorUrl' value='https://api.libralink.network/'><br>
+        URL: <input name='processorUrl' value='https://sandbox-api.libralink.network'><br>
         Challenge Id: <input name='processorChallengeId' value='decbe98a-1abe-4367-a6d4-e14208a5e39a'><br>
         Challenge: <input name='processorChallenge' value='FkdS44'><br>
         <h2>Security</h2>

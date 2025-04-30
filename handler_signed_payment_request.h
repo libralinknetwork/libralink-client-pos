@@ -109,7 +109,7 @@ class MySignedPaymentRequestCallbacks : public BLECharacteristicCallbacks {
       }            
 
       /* ... */
-      showText("$ " + String(amountBuf, 2), 2, TFT_DARKGREEN);
+      showOrderAmount("$ " + String(amountBuf, 2));
       free(decodedData);                 
   }
   void onRead(BLECharacteristic* pChar) override {}

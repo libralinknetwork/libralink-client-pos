@@ -4,6 +4,8 @@
 #include <BLEUtils.h>
 #include <BLEServer.h>
 
+extern String bleName;
+
 extern BLECharacteristic* pPayerDetails;
 extern BLECharacteristic* pSignedPaymentRequest;
 extern BLECharacteristic* pSignedECheck;
@@ -16,10 +18,10 @@ extern BLECharacteristic* pReadBLEMessage;
 #define UUID_WRITE_SIGNED_E_CHECK "a0dd609f-fbda-4996-ab9c-6d53fe763945"
 #define UUID_READ_BLE_MESSAGE "a20d3f9f-1d6e-4936-80ab-cd7cb8c8b550"
 
-inline void startBLEServer(String bleName, BLECharacteristicCallbacks* callbackPayerDetails, BLECharacteristicCallbacks* callbackSignedPaymentRequest, 
+inline void startBLEServer(BLECharacteristicCallbacks* callbackPayerDetails, BLECharacteristicCallbacks* callbackSignedPaymentRequest, 
                             BLECharacteristicCallbacks* callbacSignedECheck, BLECharacteristicCallbacks* callbacMessageRead) {
     
-    BLEDevice::init(bleName.c_str());
+    BLEDevice::init(std::string(bleName.c_str()));
 
     BLEServer* pServer = BLEDevice::createServer();
     pServer->setCallbacks(new BLEServerCallbacks());

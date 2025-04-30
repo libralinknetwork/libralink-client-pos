@@ -13,6 +13,7 @@
 #include "file_manager.h"
 #include "ui_render.h"
 #include "encryption_utils.h"
+#include "random_id.h"
 
 // External variables (provided by your main sketch)
 extern String currentOrderId;
@@ -90,7 +91,8 @@ class MyCallbackPayerDetails : public BLECharacteristicCallbacks {
               #endif
 
               currentBleMessage = base64Data;
-              showText("$ " + String(currentOrderAmount, 2), 2, TFT_MAROON);
+              showOrderAmount("$ " + String(currentOrderAmount, 2));
+
           } else {
               showText("Failed to decode SharePayerDetails", 1);
           }

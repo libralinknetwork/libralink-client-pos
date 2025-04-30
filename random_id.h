@@ -1,13 +1,12 @@
 #pragma once
 #include <Arduino.h>
 
-inline const char* generateRandomId() {
-    static char id[7];
+inline String generateRandomString() {
     const char charset[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
     size_t charsetSize = sizeof(charset) - 1;
+    String id = "";
     for (int i = 0; i < 6; i++) {
-        id[i] = charset[random(charsetSize)];
+        id += charset[random(charsetSize)];
     }
-    id[6] = '\0';
     return id;
 }
